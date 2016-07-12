@@ -1,0 +1,33 @@
+.btn-custom {
+	color: #294d57;
+	font-family: 'Open Sans', sans-serif;
+	background-color: #fef9e7;
+	border: 0;
+	margin: 0 8px;
+	font-size: 18px;
+	transition: all 0.5s;
+	top: 0px;
+    left: 0px;
+    right: -420px;
+    bottom: -191px;
+}
+
+.btn-custom-new {
+	background: transparent;
+	border: 2px solid #fef9e7;
+	border-radius: 4px;
+	padding: 6px 14px;
+	margin-top: 20px;
+	color: #fef9e7;
+	font-size: 16px;
+	transition: all 0.5s;
+}
+
+.custom-wrapper {
+    text-align: center;
+}
+
+.custom-button {
+    position: absolute;
+    top: 50%;
+}
