@@ -27,7 +27,7 @@ public class Main {
 		
 		arrayDatabases.add(penn);
 		arrayDatabases.add(harvard);
-		//arrayDatabases.add(dartmouth); not adding Dartmouth anymore because the link is not available anymore
+		arrayDatabases.add(dartmouth);
 		arrayDatabases.add(howard);
 		String date = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
 		

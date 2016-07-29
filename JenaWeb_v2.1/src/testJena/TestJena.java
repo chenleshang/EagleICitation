@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,19 +53,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class TestJena 
 {
 	/**
-	 * TestJena 2.2 0613
-	 * Based on discussion with Faith. 
 	 * TestJena 2.1 0524
 	 * Changed XML display. 
 	 * TestJena 2.0 0515
 	 * Full Version of Data Citation. 
-	 * Notice:
 	 * Removed Normal Citation Form.
 	 * Only output JSON Format. 
 	 * This part contains the path of compact RDF data file
@@ -73,27 +69,27 @@ public class TestJena
 	 * We must set proper path in Windows/Linux/OSX as they 
 	 * have different file system. 
 	 */
-	public static String rdfPath = "D:\\AJ\\DATA\\Output";
-	static String upennData = "D:\\AJ\\DATA\\upennDB.ttl";
-	static String globalData = "D:\\AJ\\DATA\\globalDB.ttl";
-	static String sharedData = "D:\\AJ\\DATA\\sharedDB.ttl";
-	static String howUData = "D:\\AJ\\DATA\\howUDB.ttl";
-	static String dartmouthData = "D:\\AJ\\DATA\\dartmouthDB.ttl";
-	static String harvardData = "D:\\AJ\\DATA\\harvardDB.ttl";
-	static String eroData = "D:\\AJ\\DATA\\ero.owl";
+	static String rdfPath = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/Output";
+	static String upennData = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/upennDB.ttl";
+	static String globalData = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/globalDB.ttl";
+	static String howUData = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/howUDB.ttl";
+	static String dartmouthData = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/dartmouthDB.ttl";
+	static String harvardData = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/harvardDB.ttl";
+	static String eroData = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/ero.owl";
 	static String upennName = "upennDB";
 	static String globalName = "globalDB";
 	static String howUName = "howUDB";
 	static String eroName = "eroOntology";
 	static String dartmouthName = "dartmouthDB";
 	static String harvardName = "harvardDB";
-	static String eroTestPath = "D:\\AJ\\DATA\\EROTEST";
-	static String sharedName = "sharedDB";
+	static String eroTestPath = "/Users/natanportilho/Documents/PROJECT_CITATION/DATA_1.0_0416/EROTEST";
 	public enum outFormat{JSONFORMAT, STRINGFORMAT};
 	
-//	private static String baseURI = "http://eagle-i.itmat.upenn.edu/i/";
+ //	private static String baseURI = "http://eagle-i.itmat.upenn.edu/i/";
 //	private static String uri = "00000138-900e-3eb8-9cd7-d7e280000000";
 //	private static String hasManufacturer = "<http://purl.obolibrary.org/obo/ERO_0000034>";
+	// To keep track of the type of resource (to be used in biblatex method)
+	static String type;
 	
 	/**
 	 * When running for the first time, get rid of the comment of line: 
@@ -104,20 +100,21 @@ public class TestJena
 	 */
 	public static void main(String [] args)
 	{
-		Dataset dataset = TDBFactory.createDataset(rdfPath);
+
 		
+		Dataset dataset = TDBFactory.createDataset(rdfPath);
+//		
 //		populateTDB((Dataset)dataset, eroName, eroData);
 //		populateTDB((Dataset)dataset, upennName, upennData);
 //		populateTDB((Dataset)dataset, globalName, globalData);
 //		populateTDB((Dataset)dataset, howUName, howUData);
 //		populateTDB((Dataset)dataset, dartmouthName, dartmouthData);
 //		populateTDB((Dataset)dataset, harvardName, harvardData);
-//		populateTDB((Dataset)dataset, sharedName, sharedData);
 		
 		
 	//The following lines are the test of judging the type of different reagents. 
 		
-		dataset.begin(ReadWrite.READ);
+		//dataset.begin(ReadWrite.READ);
 		Model model = initializeModel(dataset);
 //
 //		
@@ -159,32 +156,63 @@ public class TestJena
 		String plasmid02 = "<http://eagle-i.itmat.upenn.edu/i/00000138-8199-29fd-9cd7-d7e280000000>";
 		String service01 = "<http://eagle-i.itmat.upenn.edu/i/0000013b-864e-da3d-83a0-df0880000000>";
 		String researchOppo01 = "<http://dartmouth.eagle-i.net/i/0000012d-72ea-422c-4bd3-f7c180000000>";
-		String others1 = "<http://eagle-i.itmat.upenn.edu/i/00000139-a191-20b7-4778-6c3080000000>";
-		String others4 = "<http://eagle-i.itmat.upenn.edu/i/00000138-7cbe-221b-fbab-3b8480000000>";
-		String others2 = "<http://eagle-i.itmat.upenn.edu/i/0000013f-2e9a-e0ce-5c87-8bc580000000>";
-		String others3 = "<http://eagle-i.itmat.upenn.edu/i/00000152-32a9-c0aa-aeee-612f80000000>";
-		String construct1 = "<http://shared.eagle-i.net/i/00000142-0cfa-a430-44d4-40f380000000>";
-		String eID = construct1; 
 		
-//		for(int i = 0; i < 10; i ++)
+		String test = "<http://harvard.eagle-i.net/i/0000012a­25bf­e274­f5ed­943080000000>";
+		//
+		String soft4 = "<http://eagle-i.itmat.upenn.edu/i/00000138-b992-b274-9cd7-d7e280000000>";
+		
+		String eID = humanStudy01;//;researchOppo01; 
+		
+
 		String citeResult = "{\"citation\":[{\"name\":[\"RNA-Seq Unified Mapper\"]},{\"developerName\":[\"Grant, Gregory R., Ph.D.\",\"DeLaurentis, Michael\",\"Pizarro, Angel\"]},{\"usedBy\":[\"University of Pennsylvania\"]},{\"URL\":[\"https://github.com/PGFI/rum\",\"http://www.cbil.upenn.edu/RUM/userguide.php\"]},{\"eagle-i_ID\":[\"http://eagle-i.itmat.upenn.edu/i/0000013a-3178-df7b-01af-beb880000000\"]}]}";
 		citeResult = getCitationbyModel(eID, model);
 		System.out.println(citeResult);
-//		try 
-//		{
-//			System.out.println(convertToXML(citeResult));
-//		} 
-//		catch (Exception e) 
-//		{
-//			e.printStackTrace();
-//		}
+		//--- natan test
+		try {
+			convertToBiblatex(citeResult);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
+			try {
+				convertToRIS(citeResult);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		
+		
+		
+		
+		//-- end natan test
+		
+	//----	Actually converts the query to XML, just necessary to run on the first time
+		String pstm = "SELECT * \n"
+				+ "WHERE { ?node a ?categoryNode} ";
+	
+		ParameterizedSparqlString pss = testQuery(pstm);
+		Query query = QueryFactory.create(pss.toString());
+		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+		ResultSet results = qexec.execSelect();
+
+		String outStr = ResultSetFormatter.asText(results);
+	    //System.out.println(pstm + " \n" + outStr);
+		try 
+		{
+			System.out.println(convertToXML(citeResult));
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		//---------
 		model.close();
-		
+//		
 		dataset.end();
+		//checkReliability();
 		
-//		checkReliability();
 		
 	}
 	
@@ -198,120 +226,99 @@ public class TestJena
 		return citation;
 	}
 	
-	public static String getCitation(String eID, Model model)
-	{
-		String error = "{\"citation\": [{\"error\":[\"No Citation Schema or Data Available! Check your input argument. "
-				+ "An eagle-i ID appears in eagle-i webpage URL and is like: http://eagle-i.itmat.upenn.edu/i/0000013a-3178-df7b-01af-beb880000000\"]}]}";
-		String citation = "";
-		eID = eID.replaceAll(" ", "");
-		try
-		{
-			citation = getCitationbyModel(eID, model);
-		}
-		catch (Exception e)
-		{
-			return error;
-		}
-		return citation;
-	}
-	
 	public static String getCitationbyModel(String eID, Model model)
 	{
-		String pstm = "SELECT * \n"
-				+ "WHERE { " + eID + " a ?categoryNode	. \n"
-				+ "?categoryNode rdfs:subClassOf* ?parentNodes .\n"
-				+ "OPTIONAL{ ?parentNodes owl:someValuesFrom ?property } \n"
-				+ "OPTIONAL{ ?parentNodes owl:equivalentClass ?equClass1. "
-				+ "?equClass1 owl:intersectionOf ?equClass2."
-				+ "?equClass2 rdf:first ?equClass3."
-				+ "?equClass3 rdfs:subClassOf* ?parentNodes2 } } ";
-	
-		ParameterizedSparqlString pss = testQuery(pstm);
-		Query query = QueryFactory.create(pss.toString());
-		QueryExecution qexec = QueryExecutionFactory.create(query, model);
-		ResultSet results = qexec.execSelect();
+	String pstm = "SELECT * \n"
+	+ "WHERE { " + eID + " a ?categoryNode . \n"
+	+ "?categoryNode rdfs:subClassOf* ?parentNodes .\n"
+	+ "OPTIONAL{ ?parentNodes owl:someValuesFrom ?property } \n"
+	+ "OPTIONAL{ ?parentNodes owl:equivalentClass ?equClass1. "
+	+ "?equClass1 owl:intersectionOf ?equClass2."
+	+ "?equClass2 rdf:first ?equClass3."
+	+ "?equClass3 rdfs:subClassOf* ?parentNodes2 } } ";
 
-		String outStr = ResultSetFormatter.asText(results);
-//		System.out.println(pstm + " \n" + outStr);
+	ParameterizedSparqlString pss = testQuery(pstm);
+	Query query = QueryFactory.create(pss.toString());
+	QueryExecution qexec = QueryExecutionFactory.create(query, model);
+	ResultSet results = qexec.execSelect();
 
-		//Software
-		if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000071>") != -1)
-		{
-			String tempOutStr = getSoftwareCitation(eID,model);
-			return tempOutStr;
-		}
-		//BioSpec
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000020>") != -1)
-		{
-			String tempOutStr = getBioSpecCitation(eID,model);
-			return tempOutStr;
-		}
-		//Database
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0001716>") != -1)
-		{
-			String tempOutStr = getSoftwareCitation(eID,model);
-			return tempOutStr;
-		}
-		//Human Study
-		//Various types, how to determine? 
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000004>") != -1)
-		{
-			String tempOutStr = getInstrumentCitation(eID,model);
-			return tempOutStr;
-		}
-		//instrument
-		//Are we going to use manufacturer? (Too many)
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000015>") != -1)
-		{
-			String tempOutStr = getHumanStudyCitation(eID,model); 
-			return tempOutStr;
-		}
-		//Organism or Virus
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/OBI_0100026>") != -1)
-		{
-			String tempOutStr = getOrganismCitation(eID,model);
-			return tempOutStr;
-		}
-		//Protocol
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/OBI_0000272>") != -1)
-		{
-			String tempOutStr = getProtocolCitation(eID,model);
-			return tempOutStr;
-		}
-		//Serious problem with reagent: many parallel reagent types in Eagle-i ontology. 
-		//How to specify different kinds of reagent? 
-		//Reagent
-		//use property_roles
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/OBI_0000086>") != -1 ||
-				outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000006>") != -1 || 
-				outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000285>") != -1 )
-		{
-			String tempOutStr = getReagentCitation(eID,model); 
-			return tempOutStr;
-		}
-		//Research Oppotunity
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000595>") != -1)
-		{
-			String tempOutStr = getResearchOppotunityCitation(eID,model);
-			return tempOutStr;
-		}
-		//Service
-		//Ignore citation of service fee
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000005>") != -1)
-		{
-			String tempOutStr = getServiceCitation(eID,model); 
-			return tempOutStr;
-		}
-		else if(outStr.indexOf("<http://purl.obolibrary.org/obo/BFO_0000001>") != -1)
-		{
-			String tempOutStr = getDefaultCitation(eID,model); 
-			return tempOutStr;
-		}
-		else
-		{
-			return "{\"citation\": [{\"error\":[\"No Citation Schema or Data Available! Check your input argument. "
-					+ "An eagle-i ID is like: http://eagle-i.itmat.upenn.edu/i/0000013a-3178-df7b-01af-beb880000000\"]}]}";
-		}
+	String outStr = ResultSetFormatter.asText(results);
+	//System.out.println(pstm + " \n" + outStr);
+
+	//Software
+	if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000071>") != -1)
+	{
+		type = "software";
+	String tempOutStr = getSoftwareCitation(eID,model);
+	return tempOutStr;
+	}
+	//BioSpec
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000020>") != -1)
+	{
+	String tempOutStr = getBioSpecCitation(eID,model);
+	return tempOutStr;
+	}
+	//Database
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0001716>") != -1)
+	{
+	String tempOutStr = getSoftwareCitation(eID,model);
+	return tempOutStr;
+	}
+	//Human Study
+	//Various types, how to determine? 
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000004>") != -1)
+	{
+	String tempOutStr = getInstrumentCitation(eID,model);
+	return tempOutStr;
+	}
+	//instrument
+	//Are we going to use manufacturer? (Too many)
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000015>") != -1)
+	{
+	String tempOutStr = getHumanStudyCitation(eID,model); 
+	return tempOutStr;
+	}
+	//Organism or Virus
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/OBI_0100026>") != -1)
+	{
+	String tempOutStr = getOrganismCitation(eID,model);
+	return tempOutStr;
+	}
+	//Protocol
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/OBI_0000272>") != -1)
+	{
+	String tempOutStr = getProtocolCitation(eID,model);
+	return tempOutStr;
+	}
+	//Serious problem with reagent: many parallel reagent types in Eagle-i ontology. 
+	//How to specify different kinds of reagent? 
+	//Reagent
+	//use property_roles
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/OBI_0000086>") != -1 ||
+	outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000006>") != -1 || 
+	outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000285>") != -1 )
+	{
+	String tempOutStr = getReagentCitation(eID,model); 
+	return tempOutStr;
+	}
+	//Research Oppotunity
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000595>") != -1)
+	{
+	String tempOutStr = getResearchOppotunityCitation(eID,model);
+	return tempOutStr;
+	}
+	//Service
+	//Ignore citation of service fee
+	else if(outStr.indexOf("<http://purl.obolibrary.org/obo/ERO_0000005>") != -1)
+	{
+	String tempOutStr = getServiceCitation(eID,model); 
+	return tempOutStr;
+	}
+	else
+	{
+	return "{\"citation\": [{\"error\":[\"No Citation Schema or Data Available! Check your input argument. "
+	+ "An eagle-i ID is like: http://eagle-i.itmat.upenn.edu/i/0000013a-3178-df7b-01af-beb880000000\"]}]}";
+	}
 	}
 	
 	static Dataset populateTDB(Dataset ds, String name, String dataPath) 
@@ -339,7 +346,6 @@ public class TestJena
 		
 		return model;
 	}
-
 	
 	private static ParameterizedSparqlString testQuery(String pstm) 
 	{
@@ -451,73 +457,66 @@ public class TestJena
 		
 		return citeInJSON.toString();
 	}
-
+	
 	private static String getSoftwareCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?developerName ?manuName ?usedBy ((?name + ' ' + ?version) AS ?softName) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?version ?manuName ?developerName ?usedBy ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getBioSpecCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?location ?name (LCASE(STR(?resourceType)) AS ?type) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?usedBy ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getHumanStudyCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?performedBy  ?topicName ?subjectArea ?name (LCASE(STR(?resourceType)) AS ?type) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?topicName ?performedBy ?subjectArea ?resourceType ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getInstrumentCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?location ?name ?modelNumber (LCASE(STR(?resourceType)) AS ?type) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?modelNumber ?location ?resourceType ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getOrganismCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?location ?name (LCASE(STR(?resourceType)) AS ?type)");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?location ?resourceType");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getProtocolCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?usedBy ?author ?name (LCASE(STR(?resourceType)) AS ?type)");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?usedBy ?author ?resourceType");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getReagentCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?location ?name (LCASE(STR(?resourceType)) AS ?type) (('InvertoryNumber: ' + ?categoryNumber) AS ?invertoryNumber) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?location ?resourceType ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getResearchOppotunityCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?researchProvider ?name (LCASE(STR(?resourceType)) AS ?type) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?resourceType ?researchProvider ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
 	
 	private static String getServiceCitation(String eID, Model model)
 	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?serviceProvider ?name (LCASE(STR(?resourceType)) AS ?type) ?URL");
-		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
-		return serialOutput; 
-	}
-	
-	private static String getDefaultCitation(String eID, Model model)
-	{
-		ResultSet qresultName = queryGeneralInfo(model, eID, "?name (LCASE(STR(?resourceType)) AS ?type) ?URL");
+		ResultSet qresultName = queryGeneralInfo(model, eID, "?name ?resourceType ?serviceProvider ?URL");
 		String serialOutput = GetSerializedOutputFromQueryResult(qresultName,  eID);
 		return serialOutput; 
 	}
@@ -549,10 +548,8 @@ public class TestJena
 				+ "OPTIONAL{ "+eID+" <http://purl.obolibrary.org/obo/ERO_0000390> ?serviceProviderID. \n"
 					+ "?serviceProviderID rdfs:label ?serviceProvider } \n"
 				+ "OPTIONAL{ "+eID+" <http://purl.obolibrary.org/obo/ERO_0000050>  ?modelNumber} \n"
-				+ "OPTIONAL{ "+eID+" <http://purl.obolibrary.org/obo/ERO_0000044> ?categoryNumber} \n"
 				+ "OPTIONAL{"+eID+" <http://purl.obolibrary.org/obo/ERO_0001719> ?developerID. "
 					+ "?developerID rdfs:label ?developerName} }";
-				
 		
 		ParameterizedSparqlString pss = testQuery(pstm);
 		
@@ -563,13 +560,196 @@ public class TestJena
 		ResultSet qresults = qexec.execSelect();
 		return qresults;
 	}
+
+	public static String convertToBiblatex(String jsonStr) throws Exception 
+	{
+		String biblaTexEntry = "";
+		JSONObject jsObj = new JSONObject(jsonStr);
+		JSONArray jsArray = jsObj.getJSONArray("citation");
+
+		System.out.println("");
+		
+		String citationKey = jsArray.getJSONObject(0).getJSONArray("name").toString();
+		citationKey = citationKey.replace("[", "");
+		citationKey = citationKey.replace("]", "");
+		citationKey = citationKey.replace("\"", ""); // Get rid of "
+		citationKey = citationKey.replace(" ", "");
+		citationKey = citationKey.replace("(", "");
+		citationKey = citationKey.replace(")", "");
+		citationKey = citationKey.replace("-", "");
+		citationKey = citationKey.replace("_", "");
+		citationKey = citationKey.toLowerCase();
+		//keySet(); gets the name (TAG) from the object
+		
+		/*We are keeping track of the type because if the type is "software" we are going to create the BibTex with
+		 * entry type @software. When the type is not "software" we are going to use @customA*/
+		if (type == "software"){
+			biblaTexEntry = "@software{" +  citationKey + ",";
+		}else{
+			biblaTexEntry = "@customa{" +  citationKey + ",";
+		}
+		
+		for (int i = 0; i < jsArray.length(); i++){
+			// Example:
+			// TAG = name
+			// content = RNA-Seq Unified Mapper
+			// finalLine = name = {RNA-Seq Unified Mapper},
+			
+
+			// Gets the TAGS, they will be [name], [title], [url], etc.
+				String TAG = jsArray.getJSONObject(i).keySet().toString();
+				TAG = TAG.replace("[", "");
+				TAG = TAG.replace("]", "");
+				
+				//Gets the contante whithin the TAG
+				String content = jsArray.getJSONObject(i).getJSONArray(TAG).toString();
+				content = content.replace("\",\"", " and "); // Bibtex use and instead of commas to separe names
+				content = content.replace("[", "");
+				content = content.replace("]", "");
+				content = content.replace("\"", "");
+				
+				/* Many tags are comming with names that are not supported by standard BibTex, we are changing
+				 * these tags names so they will work and also make more sense*/
+				switch (TAG) {
+				case "name":
+					TAG = "title";
+					break;
+				case "developerName":
+					TAG = "author";
+					break;
+				case "manuName":
+					TAG = "author";
+					break;			
+				case "performedBy":
+					TAG = "author";
+					break;	
+				case "usedBy":
+					TAG = "organization";
+					break;
+				case "location":
+					TAG = "organization";
+					break;
+				case "researchProvider":
+					TAG = "organization";
+					break;
+				case "serviceProvider":
+					TAG = "organization";
+					break;
+				case "URL":
+					TAG = "howpublished";
+					break;
+				case "eagle-i_ID":
+					TAG = "url";
+					break;
+				case "resourceType":
+					TAG = "type";
+					break;
+				default:
+					break;
+				}
+				
+				// The final BibTex line
+				String finalLine = TAG + " = {" + content + "},";
+				
+				// This is necessary to BiblaTex work
+				if (TAG == "howpublished"){
+					finalLine = TAG + " = \"" + "\\url{" + content + "}\",";
+				}
+				
+				biblaTexEntry = biblaTexEntry + "\n" + finalLine;
+
+		}
+
+		
+		biblaTexEntry = biblaTexEntry + "\n}";
+		System.out.println(biblaTexEntry);
+		System.out.println(" ");
+
+		// We will return biblaTexEntry
+		return null;
+		
+	}
+	///RIS
+	// string parsing is a good approach to create BibTex document
+	public static void convertToRIS(String jsonStr) throws Exception 
+	{	
+		// first tag that has to be above every RIS entry 
+		System.out.println("\n"+"TY"+ "  - " + "ELEC");
+		// array stores the two letter tags used in RIS 
+		String[][] abbrevation = {{"name","TI"},{"developerName","A1"},{"usedBy", "DP"},{"URL","UR"},{"eagle-i_ID","ID"}};
+		
+		JSONObject jsObj = new JSONObject(jsonStr);
+		JSONArray jsArray = jsObj.getJSONArray("citation");
+		
+		for (int i = 0; i < jsArray.length(); i++){
+			// getting the key for each part of the data (example: name) 
+			String Key = jsArray.getJSONObject(i).keySet().toString();
+		    Key = Key.replace("[","");
+		    Key = Key.replace("]","");
+		    //for loop checks the double array created above for the key 
+			 for(int l = 0; l < abbrevation.length; l++){
+				 //if key is found in the array then the content from the JSONArray is retrieved (example: ["RNA-Seq Unified Mapper"]);
+				 if (abbrevation[l][0].equals(Key)){
+					 String[] subject = (jsArray.getJSONObject(i).getJSONArray(Key).toString()).split("\",\"");
+					 // loop goes through the content array 
+				     for(int j = 0; j < subject.length; j++){
+				    	 if(j>0){
+				    		 abbrevation[l][1] = abbrevation[l][1].replace((abbrevation[l][1]).charAt(1),Integer.toString(j+1).charAt(0));
+				    	 }
+				    	 	System.out.print(abbrevation[l][1]+"  - ");
+				    	 	subject[j] = subject[j].replace("[\"", "");
+				    	 	subject[j] = subject[j].replace("\"]", "");
+				        	System.out.println(subject[j]);
+				     }
+				 }
+			 }
+	      
+			}
+		System.out.println("ER"+ "  - ");
+	}
+
 	
+	//
+	
+	
+	
+	
+	
+	//--
 	public static String convertToXML(String jsonStr) throws Exception 
 	{
 		//TODO: 
 		JSONObject jsObj = new JSONObject(jsonStr);
 		JSONArray jsArray = jsObj.getJSONArray("citation");
 		JSONObject eachNode = new JSONObject();
+		
+		
+		///TEST NATAN///
+		//jsArray.put(eachNode);
+		
+		// Changin field names so they will many data cite schema
+		for (int i = 0; i < jsArray.length(); i++){
+			System.out.println(jsArray.getJSONObject(i));
+			
+			switch (jsArray.getJSONObject(i).keySet().toString()) {
+			case "[name]":
+				jsArray.getJSONObject(i).put("title", jsArray.getJSONObject(i).remove("name"));
+				break;
+			case "[manuName]":
+				jsArray.getJSONObject(i).put("creators", jsArray.getJSONObject(i).remove("manuName"));
+				break;
+			case "[performedBy]":
+				jsArray.getJSONObject(i).put("creators", jsArray.getJSONObject(i).remove("performedBy"));
+				break;
+
+			default:
+				break;
+			}
+			
+			
+		}
+		
+		///END TEST NATAN/
 		
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -581,7 +761,6 @@ public class TestJena
 		{
 			eachNode = jsArray.getJSONObject(i);
 			String thisKey = eachNode.keys().next().toString();
-	//		System.out.println(thisKey);
 			Element nodeElement = doc.createElement(thisKey);
 			JSONArray tempArray = eachNode.getJSONArray(thisKey);
 			if(tempArray.length() <= 1)//<name>
@@ -605,8 +784,20 @@ public class TestJena
 
 			citationRoot.appendChild(nodeElement);
 		}
-  
+
+        
+        Element root = doc.createElement("font");
+        Element nameElement = doc.createElement("name");
+        Text nameValue = doc.createTextNode("san");
+        Element sizeElement = doc.createElement("size");
+        sizeElement.setAttribute("unit", "px");
+        Text sizeValue = doc.createTextNode("14");
+       
         doc.appendChild(citationRoot);
+        root.appendChild(nameElement);
+        nameElement.appendChild(nameValue);
+        root.appendChild(sizeElement);
+        sizeElement.appendChild(sizeValue);
         
         TransformerFactory tf = TransformerFactory.newInstance();
         tf.setAttribute("indent-number", new Integer(2));
@@ -662,18 +853,18 @@ public class TestJena
         return citationResult;
 	}
 	
-	public static boolean checkReliability()
+	public static boolean checkReliability1()
 	{
 		Dataset dataset = TDBFactory.createDataset(rdfPath);
 		Model model = ModelFactory.createDefaultModel();
 		Model upennModel = ModelFactory.createDefaultModel(); 
 
 
-		model.add(dataset.getNamedModel(harvardName));
+		model.add(dataset.getNamedModel(upennName));
 		model.add(dataset.getNamedModel(eroName));
 		model.add(dataset.getNamedModel(globalName));
 		
-		upennModel.add(dataset.getNamedModel(harvardName));
+		upennModel.add(dataset.getNamedModel(upennName));
 		
 		String pstm = "SELECT ?eID ?typeName \n"
 				+ "WHERE {?eID :hasWorkflowState :WFS_Published;"
@@ -694,7 +885,6 @@ public class TestJena
 			Iterator<String> names = soln.varNames();
 			
 			String normalCitation = "";
-			boolean noCitation = false;
 			while (names.hasNext())
 			{
 				
@@ -705,19 +895,16 @@ public class TestJena
 				{
 					tempEID = "<"+ soln.get(var).toString().trim()+">";
 					normalCitation = jsonToCitaton(getCitationbyModel(tempEID, model));
-					if(normalCitation.contains("No Citation"))
-						noCitation = true;
-					else noCitation = false;
-					if(noCitation) checkResult += String.format("%-75s", tempEID) + "|\t";
+					checkResult += String.format("%-75s", tempEID) + "|\t";
 				}
 				else
 				{
 					int strLength = soln.get(var).toString().length();
-					if(noCitation) checkResult += String.format("%-30s", 
+					checkResult += String.format("%-30s", 
 							soln.get(var).toString().substring(0, Integer.min(27, strLength))) + "|\t";
 				}
 			}
-			if(noCitation) checkResult += normalCitation + "\r\n";
+			checkResult += normalCitation + "\r\n";
 		}
 
 		System.out.println(checkResult);
@@ -745,6 +932,91 @@ public class TestJena
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public static boolean checkReliability()
+	{
+	Dataset dataset = TDBFactory.createDataset(rdfPath);
+	Model model = ModelFactory.createDefaultModel();
+	Model upennModel = ModelFactory.createDefaultModel(); 
+
+
+	model.add(dataset.getNamedModel(upennName));
+	model.add(dataset.getNamedModel(eroName));
+	model.add(dataset.getNamedModel(globalName));
+
+	upennModel.add(dataset.getNamedModel(upennName));
+
+	String pstm = "SELECT ?eID ?typeName \n"
+	+ "WHERE {?eID :hasWorkflowState :WFS_Published;"
+	+ "a ?typeNode. ?typeNode rdfs:label ?typeName}";
+
+	ParameterizedSparqlString pss = testQuery(pstm);
+	Query query = QueryFactory.create(pss.toString());
+	QueryExecution qexec = QueryExecutionFactory.create(query, upennModel);
+	ResultSet qresults = qexec.execSelect();
+
+	// String outStr = ResultSetFormatter.asText(qresults);
+
+
+	String checkResult = "";
+	while(qresults.hasNext())
+	{
+	QuerySolution soln = qresults.next();
+	Iterator<String> names = soln.varNames();
+
+	String normalCitation = "";
+	boolean noCitation = false;
+	while (names.hasNext())
+	{
+
+	String var = names.next();
+	String tempEID = "";
+	// System.out.println(tempEID);
+	if(var.equals("eID"))
+	{
+	tempEID = "<"+ soln.get(var).toString().trim()+">";
+	normalCitation = jsonToCitaton(getCitationbyModel(tempEID, model));
+	if(normalCitation.contains("No Citation"))
+	noCitation = true;
+	else noCitation = false;
+	if(noCitation) checkResult += String.format("%-75s", tempEID) + "|\t";
+	}
+	else
+	{
+	int strLength = soln.get(var).toString().length();
+	if(noCitation) checkResult += String.format("%-30s", 
+	soln.get(var).toString().substring(0, Integer.min(27, strLength))) + "|\t";
+	}
+	}
+	if(noCitation) checkResult += normalCitation + "\r\n";
+	}
+
+	System.out.println(checkResult);
+	try 
+	{
+	String filePath = "test.txt";
+	File file1 = new File(filePath);
+	if (file1.exists()) 
+	{  
+	          //  System.out.println("Exist");  
+	        } 
+	else 
+	        {  
+	          //  System.out.println("Not Exist");  
+	file1.createNewFile();
+
+	        } 
+	BufferedWriter output = new BufferedWriter(new FileWriter(file1));  
+	        
+	output.write(checkResult);
+	        output.close(); 
+	} 
+	catch (IOException e) 
+	{
+	e.printStackTrace();
+	}
+	return false;
 	}
 }
 

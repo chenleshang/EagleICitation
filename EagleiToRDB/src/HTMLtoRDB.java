@@ -63,7 +63,8 @@ public class HTMLtoRDB {
             }
             // For test purposes, print the total number of lines
             // It's always going to print the number of lines inserted + 1 (because the first line is the column names)
-            System.out.println(i);
+            System.out.println("");
+            System.out.println(i - 1 + " Lines inserted into temp_eaglei_resources (This include duplicates, duplicates will not be inserted into eaglei_resources)");
 
         } catch (IOException e) {
             // TODO Auto-generated catch block

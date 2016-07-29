@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 		
@@ -15,18 +17,29 @@ public class Main {
 		String urlDARTMOUTH = "";
 		
 		// Table to insert data
-		String tableName = "eaglei_resources";
+		String tableName = "temp_eaglei_resources";
 		
 		// Uses the class DatabaseConnection to connect to MySQL
 		DatabaseConnection connection = new DatabaseConnection();
 		
 		// Connect to database using database name
-		connection.connect(howard_eagleirdb);
+		connection.connect("penn_eagleirdb");
 		
 		// Uses the class HTMLtoRDB to read html and convert to CSV (comma-separated values) and then insert it into MySQL
 		HTMLtoRDB htmLtoRDB = new HTMLtoRDB();
-		htmLtoRDB.convertHTMLtoRDB(connection, tableName, urlHOWARD);
+		htmLtoRDB.convertHTMLtoRDB(connection, tableName, urlPENN);
 
+		
+		String query = "CALL populate_eaglei_changes_log_triple";
+		connection.callProcedure(query);
+		
+		query = "CALL populate_eaglei_changes_log_resource";
+		connection.callProcedure(query);
+		
+		
+		
+
+		//call populate_eaglei_changes_log_resource;
 	}
 
 }
