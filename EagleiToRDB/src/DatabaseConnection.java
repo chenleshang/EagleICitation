@@ -24,8 +24,8 @@ public class DatabaseConnection {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, "root", "password");
-			//connection = DriverManager.getConnection("jdbc:mysql://fling.seas.upenn.edu:3306/" + databaseName, "alawini", "rdf_d8_pa33");
+//			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, "root", "password");
+			connection = DriverManager.getConnection("jdbc:mysql://fling.seas.upenn.edu:3306/" + databaseName, "alawini", "rdf_d8_pa33");
 			statement = connection.createStatement();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
