@@ -19,7 +19,7 @@ public class Main {
 		// Table to insert data
 		String tableName = "_temp_eaglei_resources";
 		
-		String resourcesURL;
+		String resourcesURL="";
 		
 		// dbName should be changed from the user interface
 		String dbName = "dartmouth";
@@ -27,16 +27,18 @@ public class Main {
 		case "penn":
 			resourcesURL = urlPENN;
 			break;
-		case "howard":
+		case "harvard":
 			resourcesURL = urlHARVARD;
 			break;
-		case "harvard":
+		case "howard":
 			resourcesURL = urlHOWARD;
 			break;
 		case "dartmouth":
 			resourcesURL = urlDARTMOUTH;
 			break;
-
+		case "test":
+			resourcesURL = urlHARVARD;
+			break;
 		default:
 			break;
 		}
@@ -70,10 +72,10 @@ public class Main {
 		HTMLtoRDB htmLtoRDB = new HTMLtoRDB();
 		// This is what actually will insert the stuff into MySQL
 		tableName = dbName + tableName;
-		htmLtoRDB.convertHTMLtoRDB(connection, tableName, urlHOWARD);
+		htmLtoRDB.convertHTMLtoRDB(connection, tableName, resourcesURL);
 
-		// Now we call the 3 stores procedures to UPDATE de database
-		String query = "CALL "+ dbName + "_populate_eaglei_validtime";
+		// Now we call the 3 stored procedures to UPDATE the database
+		String query = "CALL "+ dbName + "_populate_eaglei_validtime_V2";
 		connection.callProcedure(query);
 		query = "CALL "+ dbName + "_populate_eaglei_changes_log_triple";
 		connection.callProcedure(query);

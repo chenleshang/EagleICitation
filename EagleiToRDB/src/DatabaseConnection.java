@@ -40,7 +40,7 @@ public class DatabaseConnection {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 //			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + databaseName, "root", "password");
-			connection = DriverManager.getConnection("jdbc:mysql://fling.seas.upenn.edu:3306/" + databaseName, "alawini", "rdf_d8_pa33");
+			connection = DriverManager.getConnection("jdbc:mysql://fling.seas.upenn.edu:3306/" + databaseName, "USER_NAME[EMAIL ME TO GET IT]", "PASSWORD[EMAIL ME TO GET IT]");
 			statement = connection.createStatement();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -179,85 +179,62 @@ public class DatabaseConnection {
 	            try {
 					stmt = connection.createStatement();
 					
-					stmt.execute("DROP PROCEDURE IF EXISTS " + institution + "_populate_eaglei_validtime;");
+					stmt.execute("DROP PROCEDURE IF EXISTS " + institution + "_populate_eaglei_validtime_V2;");
 					stmt.execute("DROP PROCEDURE IF EXISTS " + institution + "_populate_eaglei_changes_log_triple;");
 					stmt.execute("DROP PROCEDURE IF EXISTS " + institution + "_populate_eaglei_changes_log_resource;");
 
-					 stmt.execute(
+					  stmt.execute(
 //							 " DELIMITER $$"
 //					 		+ 
-							 " CREATE PROCEDURE " + institution + "_populate_eaglei_validtime()"
+							 " CREATE PROCEDURE " + institution + "_populate_eaglei_validtime_V2()\n"
 //					 		+ " DETERMINISTIC"
-					 		+ " BEGIN"
-					 		+ " DECLARE countID int;"
-					 		+ " DECLARE tripleID int;"
-					 		+ " DECLARE temp_subject TEXT;"
-					 		+ " DECLARE temp_predicate TEXT;"
-					 		+ " DECLARE temp_object TEXT;"
-					 		+ " DECLARE temp_type VARCHAR(10);"
-					 		+ " DECLARE temp_version_date VARCHAR(8);"
-					 		+ " DECLARE done INT DEFAULT 0;"
+					 		+ " BEGIN\n"
+					 		+ " DECLARE tripleID int default 0;\n"
+					 		+ " DECLARE countID int;\n"
+					 		+ " DECLARE temp_subject TEXT;\n"
+					 		+ " DECLARE temp_predicate TEXT;\n"
+					 		+ " DECLARE temp_object TEXT;\n"
+					 		+ " DECLARE temp_type VARCHAR(10);\n"
+					 		+ " DECLARE temp_version_date VARCHAR(8);\n"
+					 		+ " DECLARE lastVersion_date VARCHAR(8);\n"
+					 		+ " DECLARE done INT DEFAULT 0;\n"
 					 		
-					 		+ " DECLARE cur CURSOR FOR"
-					 		+ " SELECT subject, predicate, object, type, version_date FROM " + institution + "_temp_eaglei_resources;"
+					 		+ " DECLARE cur CURSOR FOR\n"
+					 		+ " SELECT subject, predicate, object, type, version_date FROM " + institution + "_temp_eaglei_resources;\n"
 					 		
-					 		+ " BEGIN "
-					 		+ " SELECT count(id) INTO countID from " + institution + "_eaglei_global_vars;"
-					 		+ " IF(countID = 0) THEN"
-					 		+ " INSERT INTO " + institution + "_eaglei_global_vars VALUES (1,' ',' ');"
-					 		+ " END IF;"
-					 		+ " END;"
-					 		+ " OPEN cur;"
-					 		+ " BEGIN"
-					 		+ " DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;"
-					 		+ " read_loop: LOOP"
-					 		
-					 		+ " FETCH cur INTO  temp_subject, temp_predicate, temp_object, temp_type, temp_version_date;"
-					 		+ " IF done THEN"
-					 		+ " LEAVE read_loop;"
-					 		+ " END IF;"
-					 		
-					 		+ " IF (NOT EXISTS( SELECT * FROM " + institution + "_eaglei_resources WHERE subject = temp_subject AND"
-					 		+ " predicate = temp_predicate AND object = temp_object)) THEN"
-					 		
-					 		+ " INSERT INTO " + institution + "_eaglei_resources (subject, predicate, object, type) VALUES (temp_subject, temp_predicate, temp_object, temp_type);"
-					 		+ " INSERT INTO " + institution + "_eaglei_validtime values ((SELECT id FROM " + institution + "_eaglei_resources"
-					 		+ " where subject = temp_subject AND"
-					 		+ " predicate = temp_predicate AND"
-					 		+ " object = temp_object),"
-					 		+ " temp_version_date, temp_version_date);"
-					 		
-					 		+ " ELSEIF (EXISTS("
-					 		+ " SELECT * FROM " + institution + "_eaglei_resources r"
-					 		+ " WHERE r.subject = temp_subject"
-					 		+ " AND r.predicate = temp_predicate"
-					 		+ " AND r.object = temp_object"
-					 		+ " AND r.id IN (SELECT t.id FROM " + institution + "_eaglei_validtime t"
-					 		+ " WHERE t.end_version < temp_version_date"
-					 		+ " AND t.id NOT IN ( SELECT t.id FROM " + institution + "_eaglei_validtime t"
-					 		+ " WHERE t.end_version = (select last_version from " + institution + "_eaglei_global_vars)))) )THEN "
-					 		+ " INSERT INTO " + institution + "_eaglei_validtime values ((SELECT id FROM " + institution + "_eaglei_resources"
-					 		+ " where subject = temp_subject AND"
-					 		+ " predicate = temp_predicate AND"
-					 		+ " object = temp_object),"
-					 		+ " temp_version_date, temp_version_date);"
-					 		+ " ELSE"
-					 		+ " UPDATE " + institution + "_eaglei_validtime"
-					 		+ " SET end_version = temp_version_date"
-					 		+ " WHERE id = (SELECT id FROM " + institution + "_eaglei_resources"
-					 		+ " where subject = temp_subject AND"
-					 		+ " predicate = temp_predicate AND"
-					 		+ " object = temp_object);"
-					 		+ " END IF;"
-					 		+ " END LOOP;"
-					 		+ " BEGIN"
-					 		+ " UPDATE " + institution + "_eaglei_global_vars g"
-					 		+ " SET g.today = temp_version_date"
-					 		+ " WHERE g.id = '1';"
-					 		+ " END;"
-					 		+ " END;"
-					 		+ " CLOSE cur;"
-					 		+ " END;"
+					 		+ " BEGIN \n"
+					 		+ " SET countID =(SELECT count(id) from "+ institution +"_eaglei_global_vars);\n" 
+					 		+ " SET lastVersion_date =(SELECT last_version From "+ institution +"_eaglei_global_vars);\n"
+					 		+ " IF(countID = 0 or countID is NULL) THEN\n"
+					 		+ " INSERT INTO " + institution + "_eaglei_global_vars VALUES (1,' ',' ');\n"
+					 		+ " END IF;\n"
+					 		+ " END;\n"
+					 		+ " OPEN cur;\n"
+					 		+ " BEGIN\n"
+					 		+ " DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;\n"
+					 		+ " read_loop: LOOP\n"
+					 		+ " FETCH cur INTO  temp_subject, temp_predicate, temp_object, temp_type, temp_version_date;\n"
+					 		+ " IF done THEN\n"
+					 		+ " LEAVE read_loop;\n"
+					 		+ " END IF;\n"
+					 		+ " SET tripleID=0;\n" 
+					 		+ " SET tripleID=(SELECT id FROM "+ institution +"_eaglei_resources" 
+					 		+ " WHERE subject = temp_subject AND predicate = temp_predicate AND object = temp_object);\n"
+					 		+ " IF (tripleID = 0 or tripleID is NULL) THEN\n" 
+					 		+ " INSERT INTO "+ institution +"_eaglei_resources (subject, predicate, object, type) VALUES (temp_subject, temp_predicate, temp_object, temp_type);\n" 
+					 		+ " SET tripleID=(SELECT id FROM "+ institution +"_eaglei_resources WHERE subject = temp_subject AND predicate = temp_predicate AND object = temp_object);\n" 
+					 		+ " INSERT INTO "+ institution +"_eaglei_validtime values (tripleID, temp_version_date, temp_version_date);\n" 
+					 		+ " ELSEIF (EXISTS(SELECT * FROM "+ institution +"_eaglei_resources r join "+ institution +"_eaglei_validtime t on r.id=t.id WHERE r.id=tripleID and t.end_version<temp_version_date AND t.end_version != lastVersion_date)) THEN\n" 
+					 		+ " INSERT INTO "+ institution +"_eaglei_validtime values (tripleID, temp_version_date, temp_version_date);\n" 
+					 		+ " ELSE UPDATE "+ institution +"_eaglei_validtime SET end_version = temp_version_date WHERE id = tripleID;\n" 
+					 		+ " END IF;\n" 
+					 		+ " END LOOP;\n" 
+					 		+ " BEGIN \n" 
+					 		+ " UPDATE "+ institution +"_eaglei_global_vars g SET g.today = temp_version_date WHERE g.id = '1';\n" 
+					 		+ " END;\n" 
+					 		+ " END;\n" 
+					 		+ " CLOSE cur;\n" 
+					 		+ " END\n"
 //					 		+ " $$"
 //					 		+ " DELIMITER ;"
 					 		+ " ");
