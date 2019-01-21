@@ -1,13 +1,13 @@
 {
 	"/": {
 		"repoName": "EagleICitation",
-		"owner": "Leshang Chen",
-		"committedDate": "2016-08-08T18:25:36Z",
-		"commitID": "c8c6308",
-		"url": "https://github.com/chenleshang/EagleICitation",
-		"collabList": [],
+		"owner": "Leshang",
+		"committedDate": "2016-08-09T18:25:36Z",
+		"commitID": "cdc6308",
+		"url": "https://github.com/chenleshang/",
+		"collabList": ["Leshang Chen"],
 		"authorList": [
-			"Leshang Chen"
+			"Leshang"
 		]
 	}
 	".": {
